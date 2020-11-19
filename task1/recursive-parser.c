@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <ctype.h>
 
+// 課題(1): () を含む処理に対応
+//
 // exp_PLUS_MINUS ::= exp_MUL_DIV '+' exp_PLUS_MINUS
 //                  | exp_MUL_DIV '-' exp_PLUS_MINUS
 //                  | exp_MUL_DIV
@@ -86,10 +88,6 @@ int DIGIT( const char* pc, const char** endp) {
    return 0 ;
 }
 
-// 課題(1): () を含む処理にしたかったら、
-//          BNF の構文木は、どう直すべきか？
-// 課題(2): () を含む処理、空白を無視する処理、
-//          定数式が複数桁を使える処理。
 
 int main() {
    const char* e = NULL ;
