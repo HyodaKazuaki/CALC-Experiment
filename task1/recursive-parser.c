@@ -33,17 +33,21 @@ int DIGIT( const char* , const char** ) ;
 int exp_PLUS_MINUS( const char* pc , const char** endp ) {
    // left=乗除算式
    int left = exp_MUL_DIV( pc , endp ) ;
+   pc = *endp + 1;
 
-   if ( **endp == '+' ) {
+   if ( *pc == '+' ) {
       // right=加減算式
-      int right = exp_PLUS_MINUS( *endp + 1 , endp ) ;
+      *endp = *endp + 1;
+      int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
       return left + right ;
-   } else if ( **endp == '-' ) {
+   } else if ( *pc == '-' ) {
       // right=加減算式
-      int right = exp_PLUS_MINUS( *endp + 1 , endp ) ;
+      *endp = *endp + 1;
+      int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
       return left - right ;
    } else {
       // 乗除算式を返す
+      *endp = *endp + 1;
       return left ;
    }
 }
@@ -52,14 +56,16 @@ int exp_PLUS_MINUS( const char* pc , const char** endp ) {
 //   DIGITに相当する構文木の処理は、組み込んでしまう。
 int exp_MUL_DIV( const char* pc , const char** endp ) {
    int left = BRACKETED(pc, endp);
-   *endp = *endp + 1;
-   if ( **endp == '*' ) {
+   pc = *endp + 1;
+   if ( *pc == '*' ) {
       // right=乗除算式
-      int right = exp_MUL_DIV( *endp + 1 , endp ) ;
+      *endp = *endp + 1;
+      int right = exp_MUL_DIV( pc + 1 , endp ) ;
       return left * right ;
-   } else if ( **endp == '/' ) {
+   } else if ( *pc == '/' ) {
       // right=乗除算式
-      int right = exp_MUL_DIV( *endp + 1 , endp ) ;
+      *endp = *endp + 1;
+      int right = exp_MUL_DIV( pc + 1 , endp ) ;
       return left / right ;
    }
    // 数値を返す
