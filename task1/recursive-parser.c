@@ -37,17 +37,17 @@ int exp_PLUS_MINUS( const char* pc , const char** endp ) {
 
    if ( *pc == '+' ) {
       // right=加減算式
-      *endp = *endp + 1;
+      *endp = pc;
       int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
       return left + right ;
    } else if ( *pc == '-' ) {
       // right=加減算式
-      *endp = *endp + 1;
+      *endp = pc;
       int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
       return left - right ;
    } else {
       // 乗除算式を返す
-      *endp = *endp + 1;
+      *endp = pc;
       return left ;
    }
 }
@@ -59,12 +59,12 @@ int exp_MUL_DIV( const char* pc , const char** endp ) {
    pc = *endp + 1;
    if ( *pc == '*' ) {
       // right=乗除算式
-      *endp = *endp + 1;
+      *endp = pc;
       int right = exp_MUL_DIV( pc + 1 , endp ) ;
       return left * right ;
    } else if ( *pc == '/' ) {
       // right=乗除算式
-      *endp = *endp + 1;
+      *endp = pc;
       int right = exp_MUL_DIV( pc + 1 , endp ) ;
       return left / right ;
    }
