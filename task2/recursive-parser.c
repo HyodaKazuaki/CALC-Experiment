@@ -16,8 +16,7 @@
 //                  | BRACKETED '/' exp_MUL_DIV
 //                  | BRACKETED
 //                  ;
-// BRACKETED      ::= ' ' exp_PLUS_MINUS
-//                  |'(' exp_PLUS_MINUS ')'
+// BRACKETED      ::= '(' exp_PLUS_MINUS ')'
 //                  | DIGIT
 // DIGIT          ::= [0-9] ;
 
@@ -27,6 +26,13 @@ int exp_MUL_DIV( const char* , const char** ) ;
 int BRACKETED( const char* , const char** ) ;
 int DIGIT( const char* , const char** ) ;
 
+const char* ignore_space(const char* ptr) {
+   while(*ptr == ' ') {
+      ptr += 1;
+   }
+   return ptr;
+}
+
 // PLUS,MINUSだけの式
 //   構文解析関数の引数
 //   pc:   解析する文字列の先頭
@@ -34,21 +40,22 @@ int DIGIT( const char* , const char** ) ;
 int exp_PLUS_MINUS( const char* pc , const char** endp ) {
    // left=乗除算式
    int left = exp_MUL_DIV( pc , endp ) ;
-   pc = *endp + 1;
+   pc = ignore_space(*endp + 1);
 
    if ( *pc == '+' ) {
       // right=加減算式
-      *endp = *endp + 1;
-      int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
+      *endp = pc;
+      pc = *endp + 1;
+      int right = exp_PLUS_MINUS( pc , endp ) ;
       return left + right ;
    } else if ( *pc == '-' ) {
       // right=加減算式
-      *endp = *endp + 1;
-      int right = exp_PLUS_MINUS( pc + 1 , endp ) ;
+      *endp = pc;
+      pc = *endp + 1;
+      int right = exp_PLUS_MINUS( pc , endp ) ;
       return left - right ;
    } else {
       // 乗除算式を返す
-      *endp = *endp + 1;
       return left ;
    }
 }
@@ -57,16 +64,18 @@ int exp_PLUS_MINUS( const char* pc , const char** endp ) {
 //   DIGITに相当する構文木の処理は、組み込んでしまう。
 int exp_MUL_DIV( const char* pc , const char** endp ) {
    int left = BRACKETED(pc, endp);
-   pc = *endp + 1;
+   pc = ignore_space(*endp + 1);
    if ( *pc == '*' ) {
       // right=乗除算式
-      *endp = *endp + 1;
-      int right = exp_MUL_DIV( pc + 1 , endp ) ;
+      *endp = pc;
+      pc = *endp + 1;
+      int right = exp_MUL_DIV(pc , endp ) ;
       return left * right ;
    } else if ( *pc == '/' ) {
       // right=乗除算式
-      *endp = *endp + 1;
-      int right = exp_MUL_DIV( pc + 1 , endp ) ;
+      *endp = pc;
+      pc = *endp + 1;
+      int right = exp_MUL_DIV(pc , endp ) ;
       return left / right ;
    }
    // 数値を返す
@@ -74,24 +83,30 @@ int exp_MUL_DIV( const char* pc , const char** endp ) {
 }
 
 int BRACKETED( const char* pc, const char** endp) {
+   pc = ignore_space(pc);
    if(*pc == '(') {
       *endp = pc;
-      int left = exp_PLUS_MINUS(pc + 1, endp);
-      if(**endp == ')')
+      pc = *endp + 1;
+      int left = exp_PLUS_MINUS(pc, endp);
+      pc = ignore_space(*endp + 1);
+      if(*pc == ')'){
+         *endp = pc;
          return left;
-      printf("Error\n");
+      }
+      printf("bracket Error\n");
       return 0;
    }
    return DIGIT(pc, endp);
 }
 
 int DIGIT( const char* pc, const char** endp) {
+   pc = ignore_space(pc);
    if ( isdigit( *pc ) ){
       *endp = pc;
       return *pc - '0';
    }
 
-   printf( "Error\n" ) ;
+   printf( "digit Error\n" ) ;
    return 0 ;
 }
 
@@ -100,8 +115,8 @@ int DIGIT( const char* pc, const char** endp) {
 
 int main() {
    const char* e = NULL ;
-   printf( "%d\n" , exp_PLUS_MINUS( "(1 + 2)*3" , &e ) ) ;
-   printf( "%d\n" , exp_PLUS_MINUS( "1*(2+3)" , &e ) ) ;
-   printf( "%d\n" , exp_PLUS_MINUS( "(1+2)*(3+4)" , &e ) ) ;
+   printf( "%d\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * 3 " , &e ) ) ;
+   printf( "%d\n" , exp_PLUS_MINUS( " 1 * ( 2 + 3 ) " , &e ) ) ;
+   printf( "%d\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * ( 3 + 4 ) " , &e ) ) ;
    return 0 ;
 }
