@@ -7,21 +7,37 @@
 * 構文解析
 
 
-## 字句解析
-
-
-## 構文解析
+## 字句解析と構文解析
 ### 再起下降パーサ
 ```
-<ADDSUM> ::= <MULDIV> '+' <ADDSUM>
-        | <MULDIV> '-' <ADDSUM>
-        | <MULDIV>
-        ;
-<MULDIV> ::= <DIGIT> '*' <MULDIV>
-        | <DIGIT> '/' <MULDIV>
-        | <DIGIT>
-        ;
-<DIGIT> ::= [0-9]
-        ;
+<exp_PLUS_MINUS> ::= <exp_MUL_DIV> '+' <exp_PLUS_MINUS>
+                 | <exp_MUL_DIV> '-' <exp_PLUS_MINUS>
+                 | <exp_MUL_DIV>
+                 ;
+<exp_MUL_DIV>    ::= <exp_MULTIPLIER> '*' <exp_MUL_DIV>
+                 | <exp_MULTIPLIER> '/' <exp_MUL_DIV>
+                 | <exp_MULTIPLIER> '%' <exp_MUL_DIV>
+                 | <exp_MULTIPLIER>
+                 ;
+<exp_MULTIPLIER> ::= <FULL_NUM_VALUE> '^' <FULL_NUM_VALUE>
+                 | <FULL_NUM_VALUE>
+                 ;
+<FULL_NUM_VALUE> ::= '+' <BRACKETED>
+                 | '-' <BRACKETED>
+                 | <BRACKETED>
+                 ;
+<BRACKETED>      ::= '(' <exp_PLUS_MINUS> ')'
+                 | <NUM_VALUE>
+                 ;
+<NUM_VALUE>      ::= <DIGITS> '.' <DIGITS>
+                 | <DIGITS>
+                 ;
+<DIGITS>         ::= <DIGIT> <DIGITS>
+                 | <DIGIT>
+                 ;
+<DIGIT>          ::= [0-9]
+                 ;
 ```
+
+
 ### LR構文解析法
