@@ -8,15 +8,15 @@
 //                  | exp_MUL_DIV '-' exp_PLUS_MINUS
 //                  | exp_MUL_DIV
 //                  ;
-// exp_MUL_DIV    ::= BRACKETED '*' exp_MUL_DIV
-//                  | BRACKETED '/' exp_MUL_DIV
+// exp_MUL_DIV    ::= FULL_NUM_VALUE '*' exp_MUL_DIV
+//                  | FULL_NUM_VALUE '/' exp_MUL_DIV
+//                  | FULL_NUM_VALUE
+//                  ;
+// FULL_NUM_VALUE ::= '+' BRACKETED
+//                  | '-' BRACKETED
 //                  | BRACKETED
 //                  ;
 // BRACKETED      ::= '(' exp_PLUS_MINUS ')'
-//                  | FULL_NUM_VALUE
-//                  ;
-// FULL_NUM_VALUE ::= '+' NUM_VALUE
-//                  | '-' NUM_VALUE
 //                  | NUM_VALUE
 //                  ;
 // NUM_VALUE      ::= DIGITS '.' DIGITS
@@ -31,8 +31,8 @@
 // 構文解析に使う関数のプロトタイプ宣言
 float exp_PLUS_MINUS( const char* , const char** ) ;
 float exp_MUL_DIV( const char* , const char** ) ;
-float BRACKETED( const char* , const char** ) ;
 float FULL_NUM_VALUE(const char* , const char**);
+float BRACKETED( const char* , const char** ) ;
 float NUM_VALUE(const char* , const char**);
 float DIGITS(const char* , const char**, int*, int);
 float DIGIT( const char* , const char** ) ;
@@ -74,7 +74,7 @@ float exp_PLUS_MINUS( const char* pc , const char** endp ) {
 // MUL,DIVだけの式
 //   DIGITに相当する構文木の処理は、組み込んでしまう。
 float exp_MUL_DIV( const char* pc , const char** endp ) {
-   float left = BRACKETED(pc, endp);
+   float left = FULL_NUM_VALUE(pc, endp);
    pc = ignore_space(*endp + 1);
    if ( *pc == '*' ) {
       // right=乗除算式
@@ -93,6 +93,23 @@ float exp_MUL_DIV( const char* pc , const char** endp ) {
    return left ;
 }
 
+float FULL_NUM_VALUE(const char* pc, const char** endp){
+   pc = ignore_space(pc);
+   if(*pc == '+'){
+      *endp = pc;
+      pc = *endp + 1;
+      float left = BRACKETED(pc, endp);
+      return left;
+   }
+   if(*pc == '-'){
+      *endp = pc;
+      pc = *endp + 1;
+      float left = BRACKETED(pc, endp);
+      return -left;
+   }
+   return BRACKETED(pc, endp);
+}
+
 float BRACKETED( const char* pc, const char** endp) {
    pc = ignore_space(pc);
    if(*pc == '(') {
@@ -107,23 +124,6 @@ float BRACKETED( const char* pc, const char** endp) {
       printf("bracket Error\n");
       return 0;
    }
-   return FULL_NUM_VALUE(pc, endp);
-}
-
-float FULL_NUM_VALUE(const char* pc, const char** endp){
-   pc = ignore_space(pc);
-   if(*pc == '+'){
-      *endp = pc;
-      pc = *endp + 1;
-      float left = NUM_VALUE(pc, endp);
-      return left;
-   }
-   if(*pc == '-'){
-      *endp = pc;
-      pc = *endp + 1;
-      float left = NUM_VALUE(pc, endp);
-      return -left;
-   }
    return NUM_VALUE(pc, endp);
 }
 
@@ -131,6 +131,7 @@ float NUM_VALUE(const char* pc, const char** endp){
    int counter = 0;
    float left = DIGITS(pc, endp, &counter, 0);
    pc = *endp + 1;
+   pc = ignore_space(pc);
    if(*pc == '.'){
       // 小数を計算
       *endp = pc;
