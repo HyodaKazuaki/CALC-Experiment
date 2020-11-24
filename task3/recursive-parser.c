@@ -1,8 +1,3 @@
-// 再帰下読みの基本の一番短いサンプル
-//
-//   字句解析は面倒なので、
-//   演算子は1文字のみ、定数は数字1桁だけとする。
-
 #include <math.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -172,9 +167,6 @@ float DIGIT( const char* pc, const char** endp) {
    printf( "digit Error\n" ) ;
    return 0 ;
 }
-
-// 課題(2): () を含む処理、空白を無視する処理、
-//          定数式が複数桁を使える処理。
 
 int main() {
    const char* e = NULL ;
