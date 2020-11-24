@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-// 課題(2): () を含む処理、空白を無視する処理、定数式が+-を含む複数桁を使える処理に対応
+// 課題(3): () を含む処理、空白を無視する処理、定数式が+-を含む複数桁を使える処理に対応
 //
 // exp_PLUS_MINUS ::= exp_MUL_DIV '+' exp_PLUS_MINUS
 //                  | exp_MUL_DIV '-' exp_PLUS_MINUS
