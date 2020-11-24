@@ -21,6 +21,29 @@
                 "isDefault": true
             },
             "detail": "Generated task by Debugger"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc build active file including math.h",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-g",
+                "${file}",
+                "-lm",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Generated task by Debugger"
         }
     ],
     "version": "2.0.0"
