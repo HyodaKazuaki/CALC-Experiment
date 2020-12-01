@@ -62,6 +62,7 @@ const char* ignore_space(const char* ptr) {
 //   endp: 解析が終わった場所
 float exp_PLUS_MINUS( const char* pc , const char** endp ) {
    // left=乗除算式
+   pc = ignore_space(pc);
    float left = exp_MUL_DIV( pc , endp ) ;
    pc = ignore_space(*endp + 1);
 
@@ -91,19 +92,20 @@ float exp_MUL_DIV( const char* pc , const char** endp ) {
    if ( *pc == '*' ) {
       // right=乗除算式
       *endp = pc;
-      pc = *endp + 1;
+      pc = ignore_space(*endp + 1);
       float right = exp_MUL_DIV(pc , endp ) ;
       return left * right ;
    } else if ( *pc == '/' ) {
       // right=乗除算式
       *endp = pc;
-      pc = *endp + 1;
+      pc = ignore_space(*endp + 1);
       float right = exp_MUL_DIV(pc , endp ) ;
       return left / right ;
    } else if ( *pc == '%' ) {
       // right=乗除算式
       *endp = pc;
       pc = *endp + 1;
+      pc = ignore_space(*endp + 1);
       float right = exp_MUL_DIV(pc , endp ) ;
       return (float)((int)left % (int)right);
    }
@@ -117,7 +119,7 @@ float exp_MULTIPLIER( const char* pc , const char** endp ) {
    if(*pc == '^'){
       // 指数を計算
       *endp = pc;
-      pc = *endp + 1;
+      pc = ignore_space(*endp + 1);
       int counter = 0;
       float right = FULL_NUM_VALUE(pc, endp);
       return powf(left,right);
@@ -126,24 +128,22 @@ float exp_MULTIPLIER( const char* pc , const char** endp ) {
 }
 
 float FULL_NUM_VALUE(const char* pc, const char** endp){
-   pc = ignore_space(pc);
-   if(*pc == '+'){
-      *endp = pc;
-      pc = *endp + 1;
-      float left = BRACKETED(pc, endp);
-      return left;
-   }
+   // pc = ignore_space(pc);
    if(*pc == '-'){
       *endp = pc;
       pc = *endp + 1;
       float left = BRACKETED(pc, endp);
       return -left;
    }
+   if(*pc == '+'){
+      *endp = pc;
+      pc = *endp + 1;
+   }
    return BRACKETED(pc, endp);
 }
 
 float BRACKETED( const char* pc, const char** endp) {
-   pc = ignore_space(pc);
+   // pc = ignore_space(pc);
    if(*pc == '(') {
       *endp = pc;
       pc = *endp + 1;
@@ -153,7 +153,7 @@ float BRACKETED( const char* pc, const char** endp) {
          *endp = pc;
          return left;
       }
-      printf("bracket Error\n");
+      printf("bracket or sign Error\n");
       return 0;
    }
    return SCI_NOTATION(pc, endp);
@@ -175,7 +175,7 @@ float NUM_VALUE( const char* pc, const char** endp) {
    int counter = 0;
    float left = DIGITS(pc, endp, &counter, 0);
    pc = *endp + 1;
-   pc = ignore_space(pc);
+   // pc = ignore_space(pc);
    if(*pc == '.'){
       // 小数を計算
       *endp = pc;
@@ -190,7 +190,7 @@ float NUM_VALUE( const char* pc, const char** endp) {
 float DIGITS(const char* pc, const char** endp, int* counter, int inverse_flag) {
    float left = DIGIT(pc, endp);
    pc = *endp + 1;
-   pc = ignore_space(pc);
+   // pc = ignore_space(pc);
    if(isdigit( *pc )){
       // 複数桁(下に桁がある)
       float right = DIGITS(pc, endp, counter, inverse_flag);
@@ -208,7 +208,7 @@ float DIGITS(const char* pc, const char** endp, int* counter, int inverse_flag) 
 }
 
 float DIGIT( const char* pc, const char** endp) {
-   pc = ignore_space(pc);
+   // pc = ignore_space(pc);
    if ( isdigit( *pc ) ){
       *endp = pc;
       return (float)(*pc - '0');
@@ -236,10 +236,10 @@ int test(){
       "13 + 2",
       " ( 1 + 2 ) * 3 ",
       "( 1 + 2 ) * ( 3 + 4 )",
-      "+ 1042 . 0  /  - 2",
-      "  - 1.0  /  - 2  ",
+      "+1042.0  /  -2",
+      "  -1.0  /  -2  ",
       "  38 % 5  ",
-      " -(5 ^ - 2) ",
+      " -(5 ^ -2) ",
       " +(31)^3",
       " -1.302",
       " -10E-4+2",
@@ -269,23 +269,25 @@ int test(){
          printf("failed. expected: %f, result: %f\n", true_value[i], result);
       }
    }
+
+   return 0;
 }
 
 int main() {
-   // test();
+   test();
    const char* e = NULL ;
-   printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * 3 " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " 1 * ( 2 + 3 ) " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * ( 3 + 4 ) " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( "  + 1042 . 0  /  - 2  " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( "  - 1.0  /  - 2  " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( "  38 % 5  " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " -(5 ^ - 2) " , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " +(31)^3" , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " -1.302" , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " -10E-4+2" , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " -10E-(4+2)" , &e ) ) ;
-   printf( "%f\n" , exp_PLUS_MINUS( " -1.302E+5" , &e ) ) ;
-   printf("%f\n", exp_PLUS_MINUS("-10E-5", &e));
+   // printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * 3 " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " 1 * ( 2 + 3 ) " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * ( 3 + 4 ) " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( "  +1042.0  /  -2  " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( "  -1.0  /  -2  " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( "  38 % 5  " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " -(5 ^ -2) " , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " +(31)^3" , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " -1.302" , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " -10E-4+2" , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " -10E-(4+2)" , &e ) ) ;
+   // printf( "%f\n" , exp_PLUS_MINUS( " -1.302E+5" , &e ) ) ;
+   // printf("%f\n", exp_PLUS_MINUS("-10E-5", &e));
    return 0 ;
 }
