@@ -27,6 +27,9 @@
                  | <BRACKETED>
                  ;
 <BRACKETED>      ::= '(' <exp_PLUS_MINUS> ')'
+                 | <SCI_NOTATION>
+                 ;
+<SCI_NOTATION>   ::= <NUM_VALUE> 'E' <FULL_NUM_VALUE>
                  | <NUM_VALUE>
                  ;
 <NUM_VALUE>      ::= <DIGITS> '.' <DIGITS>
