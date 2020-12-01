@@ -274,7 +274,7 @@ int test(){
 int main() {
    // test();
    const char* e = NULL ;
-   printf( "%f\n" , exp_PLUS_MINUS(  , &e ) ) ;
+   printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * 3 " , &e ) ) ;
    printf( "%f\n" , exp_PLUS_MINUS( " 1 * ( 2 + 3 ) " , &e ) ) ;
    printf( "%f\n" , exp_PLUS_MINUS( " ( 1 + 2 ) * ( 3 + 4 ) " , &e ) ) ;
    printf( "%f\n" , exp_PLUS_MINUS( "  + 1042 . 0  /  - 2  " , &e ) ) ;
