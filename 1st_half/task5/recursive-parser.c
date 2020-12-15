@@ -224,10 +224,6 @@ int assert_equal(const char* str, float true_value, float* result){
    return true_value == *result;
 }
 
-// struct task{
-
-// }
-
 int test(){
    int i;
    float result;
