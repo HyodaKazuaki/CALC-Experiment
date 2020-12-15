@@ -1,3 +1,4 @@
+// 小数に対応
 %{
 // lex+yacc を用いた式の計算の構文解析部分
 #include <stdio.h>
