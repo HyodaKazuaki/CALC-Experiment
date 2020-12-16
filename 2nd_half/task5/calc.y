@@ -3,6 +3,7 @@
 // べき演算、剰余演算に対応
 // 科学的表記に対応
 // 変数代入に対応
+// 整数と小数の表記切り替えに対応
 %{
 // lex+yacc を用いた式の計算の構文解析部分
 #include <stdio.h>
@@ -36,7 +37,7 @@ line_list	: line
 			| line_list line
 			;
 line		: CHAR_LITERAL SSTI expression CR	{ variables[$1 - 'A'] = $3; }
-			| expression CR		{ printf( ">>%f\n" , $1 ) ; }
+			| expression CR		{ if((int)$1 != $1) printf( ">>%f\n" , $1 ); else printf(">>%d\n", (int)$1); }
 			;
 expression	: term
 			| expression ADD term	{
