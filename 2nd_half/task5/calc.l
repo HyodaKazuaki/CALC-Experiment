@@ -33,7 +33,7 @@ int yywrap( void )
 		return FLOAT_LITERAL;
 	}
 
-[A-Za-z] {
+[a-z] {
 	char temp;
 	temp = yytext[0];
 	yylval.char_value = temp;
