@@ -36,7 +36,7 @@ extern 	float variables[26];
 line_list	: line
 			| line_list line
 			;
-line		: CHAR_LITERAL SSTI expression CR	{ variables[$1 - 'A'] = $3; }
+line		: CHAR_LITERAL SSTI expression CR	{ variables[$1 - 'a'] = $3; }
 			| expression CR		{ if((int)$1 != $1) printf( ">>%f\n" , $1 ); else printf(">>%d\n", (int)$1); }
 			;
 expression	: term
@@ -75,11 +75,9 @@ scientific_notation
 			| literal
 			;
 float_expression
-			: ADD literal { $$ = $2; }
-			| SUB literal { $$ = -$2; }
-			| literal
+			: literal
 			;
-literal 	: CHAR_LITERAL { $$ = variables[$1 - 'A']; }
+literal 	: CHAR_LITERAL { $$ = variables[$1 - 'a']; }
 			| FLOAT_LITERAL
 			;
 %%
