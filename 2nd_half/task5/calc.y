@@ -48,7 +48,14 @@ expression	: term
 term		: primary_expression
 			| term MUL primary_expression	{ $$ = $1 * $3 ; }
 			| term DIV primary_expression	{ $$ = $1 / $3 ; }
-			| term MOD primary_expression	{ $$ = (int)$1 % (int)$3; }
+			| term MOD primary_expression	{
+				if((int)$1 - $1 == 0.0 && (int)$3 - $3 == 0.0)
+					$$ = (int)$1 % (int)$3;
+				else{
+					printf("Error\n");
+					$$ = 0;
+				}
+			}
 			;
 primary_expression
 			: ADD parensis_expression { $$ = $2; }
