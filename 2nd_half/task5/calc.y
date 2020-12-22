@@ -75,7 +75,9 @@ scientific_notation
 			| literal
 			;
 float_expression
-			: literal
+			: ADD literal { $$ = $2; }
+			| SUB literal { $$ = -$2; }
+			| literal
 			;
 literal 	: CHAR_LITERAL { $$ = variables[$1 - 'a']; }
 			| FLOAT_LITERAL
